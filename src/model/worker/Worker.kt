@@ -5,5 +5,5 @@ package model.worker
  */
 interface Worker {
     fun hasCompleted(): Boolean
-    open fun receiveBatch(wordTest : (String) -> Boolean, batchAssignment : Int, fiveLetterWordBank : List<String>)
+    fun receiveBatch(wordTest: (String) -> Boolean, batchAssignment: Int, fiveLetterWordBank: List<String>)
 }

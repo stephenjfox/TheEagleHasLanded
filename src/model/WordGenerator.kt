@@ -9,35 +9,27 @@ import com.fox.io.log.ConsoleLogger.writeLine as printColored
  * Created by stephen on 11/14/15.
  */
 object WordGenerator {
-    private val list : MutableList<String> = ArrayList()
-    private val listOfFailurePoints: MutableList<Triple<Int, Int, Int>> = ArrayList()
-    private var first : Int = 0
-    private var second : Int = 0
-    private var third : Int = 0
+    private val list = ArrayList<String>()
+    private val listOfFailurePoints = ArrayList<Triple<Int, Int, Int>>()
+    private var first = 0
+    private var second = 0
+    private var third = 0
     private var failCursor = 0
 
-    var hasMore : Boolean = true
-        get() {
-           return field
-        }
-        set (new) {
-            field = new
-        }
+    var hasMore: Boolean = true
+        get
+        private set
 
-    var listOfFives : List<String> = emptyList()
-        get() {
-            return field
-        }
-        set (new) {
-            field = new
-        }
+    var listOfFives: List<String> = emptyList()
+        get
+        private set
 
-    fun seedGenerator(wordList : List<String>) : Unit {
+    fun seedGenerator(wordList: List<String>) {
         list.clear()
         list.addAll(wordList)
     }
 
-    fun getNextPermutation() : Triple<String, String, String> {
+    fun getNextPermutation(): Triple<String, String, String> {
         synchronized(this, {
             checkAndIncrementCursors()
 
@@ -47,7 +39,7 @@ object WordGenerator {
         })
     }
 
-    fun getNextPermutationBatch(count : Int) : List<Triple<String, String, String>> {
+    fun getNextPermutationBatch(count: Int): List<Triple<String, String, String>> {
 
         synchronized(this, {
             val retList = ArrayList<Triple<String, String, String>>()
@@ -56,7 +48,7 @@ object WordGenerator {
 
             ConsoleLogger.warning("Batching is scary, marking potential failure point ${listOfFailurePoints.last()}")
 
-            for(i in 0 until count) {
+            for (i in 0 until count) {
                 checkAndIncrementCursors()
                 retList.add(Triple(list[first++], list[second], list[third]))
             }
@@ -88,8 +80,7 @@ object WordGenerator {
         if (listOfFailurePoints.isEmpty()) {
             hasMore = true
             ConsoleLogger.warning("Restarting the process. Sentence not found")
-        }
-        else {
+        } else {
             val triple = listOfFailurePoints[failCursor]
             ConsoleLogger.warning("Restarting from failurePoint $triple")
             first = triple.first
@@ -99,7 +90,7 @@ object WordGenerator {
         }
     }
 
-    fun maintainReferenceTo(listOfFiveLetterWords : List<String>) {
+    fun maintainReferenceTo(listOfFiveLetterWords: List<String>) {
         listOfFives = listOfFiveLetterWords
     }
 }

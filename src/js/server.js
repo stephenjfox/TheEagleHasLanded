@@ -4,14 +4,6 @@ var request = require('request');
 
 
 function processTripleArray(shaToMatch, tripleArray, fives) {
-  /*console.log("array.length = " + tripleArray.length)
-
-  console.log("Hashing to find =", shaToMatch);
-
-  console.log("Triple Array exists =", tripleArray !== null);
-
-  console.log("Fives.length =", fives.length);*/
-
   var lastSentence = "";
 
   for(var i = 0, j = tripleArray.length; i < j; i += 1) {
@@ -60,7 +52,6 @@ var callback = function(response) {
 
   //the whole response has been received, so we just print it out here
   response.on('end', function () {
-//    console.log("This is the 'end' block.")
 
     var message = JSON.parse(str);
 
@@ -78,8 +69,6 @@ var callback = function(response) {
         console.error(error);
       } else {
         console.log("Received response from POST");
-//        console.log(Object.keys(response), body);
-//        console.log(response.body, response.read);
       }
     });
   });

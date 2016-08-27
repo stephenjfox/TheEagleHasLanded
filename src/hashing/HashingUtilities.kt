@@ -8,14 +8,23 @@ import java.security.MessageDigest
 object HashingUtilities {
     val SHA256 = "SHA-256"
 
-    fun getMessageDigest() : MessageDigest {
+    fun getMessageDigest(): MessageDigest {
         return MessageDigest.getInstance(SHA256)
     }
 
-    fun getPreppedMessageDigest(prepString : String) : MessageDigest {
+    fun getPreppedMessageDigest(prepString: String): MessageDigest {
         val md = getMessageDigest()
-        md.update(prepString.toByteArray()) // scratch: my need UTF_16
+        md.update(prepString.toByteArray()) // scratch: may need UTF_16
 
         return md
+    }
+
+    fun stringBuilderFromMessageDigest(someHashGuy: MessageDigest): StringBuilder {
+        val builder = StringBuilder()
+        for (_byte in someHashGuy.digest()) {
+            val maskedByte = _byte.toInt() and 0xFF
+            builder.append(Integer.toString(maskedByte + 0x100, 16).substring(1))
+        }
+        return builder
     }
 }

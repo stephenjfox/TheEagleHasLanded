@@ -1,6 +1,5 @@
-
-import conceptproofs.HttpServerPOC
 import hashing.HashProblemSolver
+import hashing.HashingDistribution
 import model.Word
 import org.json.JSONArray
 import org.json.JSONObject
@@ -10,22 +9,15 @@ import org.json.JSONObject
  * Created by stephen on 11/12/15.
  */
 
-fun main(args : Array<String>) {
+fun main(args: Array<String>) {
 
     val mainThread = Thread.currentThread()
-    var serverThread = Thread({
-        HttpServerPOC.sparkRun(mainThread)
+    val serverThread = Thread({
+        HashingDistribution.serviceRequests(mainThread)
     })
-    // Scratch: This works!!! In like 2.5h
-    serverThread.start()
-    HashProblemSolver().runIt()
-}
 
-/**
- * This is my glorified debugging. Just be glad I'm not using my pretty print
- * library functions that I built.
- */
-fun JSONArray.printAsWords() : Unit {
-    this.filter { it is JSONObject }.forEach { println(Word.fromJSONObject(it as JSONObject)) }
+    serverThread.start()
+    HashProblemSolver().crackHash()
+
 }
 

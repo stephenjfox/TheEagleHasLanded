@@ -12,7 +12,7 @@ class FlatFileTextWriter : MessageHub {
     val filePathString = "src/solution.txt"
     val bufferedOutputStream = BufferedOutputStream(FileOutputStream(filePathString))
 
-    override fun writeMessage(sender : Any, text : String) {
+    override fun writeMessage(sender: Any, text: String) {
         bufferedOutputStream.write("Sender: $sender  message: $text\n".toByteArray())
         bufferedOutputStream.flush()
         println("Wrote the solution to the file")
@@ -21,7 +21,6 @@ class FlatFileTextWriter : MessageHub {
     override fun clearMessages() {
         // not exactly sure how to blank a file in Java
         // THis: http://stackoverflow.com/questions/6994518/how-to-delete-the-content-of-text-file-without-deleting-itself
-        // Says that
         PrintWriter(filePathString).close() // will do
     }
 }

@@ -6,18 +6,18 @@ package message
  */
 interface MessageHub {
 
-    fun writeMessage(sender : Any, text : String)
+    fun writeMessage(sender: Any, text: String)
 
     companion object {
 
         private val localBoard = LocalBulletinBoard()
         private val fileHub = FlatFileTextWriter()
 
-        fun getLocalMessageHub() : MessageHub {
+        fun getLocalMessageHub(): MessageHub {
             return localBoard
         }
 
-        fun getFileBasedMessageHub() : MessageHub {
+        fun getFileMessageHub(): MessageHub {
             return fileHub
         }
 

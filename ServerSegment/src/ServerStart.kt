@@ -8,8 +8,6 @@ import spark.Request
 import spark.Response
 import spark.Spark.get
 import spark.Spark.post
-import java.io.PrintWriter
-import java.net.ServerSocket
 import java.util.*
 
 /**
@@ -24,19 +22,19 @@ fun sparkRun() {
     HashProblemSolver().seedProblemSolving()
 
     get("/hello", { req, res -> "Hello, world: length = ${req.contentLength()}" })
-    get("/work", { req, res -> answerWorkRequest(req, res) })
+    get("/work", { req, res -> answerWorkRequest() })
     get("/work/:count", { req, res ->
         val count = req.params(":count").toInt()
-        answerWorkRequest(req, res, count)
+        answerWorkRequest(count)
     })
-    post("/work", "application/json", { req, res -> dealWorkResult(req, res) })
+    post("/work", "application/json", { req, res -> dealWorkResult(req) })
 }
 
-fun answerWorkRequest(request : Request?, response : Response?, count : Int = 20) : String {
+fun answerWorkRequest(count: Int = 20) : String {
 
     val mapForJson = HashMap<String, Any>()
 
-    mapForJson.put("toMatch", HashProblemSolver().hashToFind)
+    mapForJson.put("toMatch", HashProblemSolver.hashToFind)
 
     mapForJson.put("triples", WordGenerator.getNextPermutationBatch(count))
 
@@ -45,7 +43,7 @@ fun answerWorkRequest(request : Request?, response : Response?, count : Int = 20
     return JSONObject(mapForJson).toString()
 }
 
-fun dealWorkResult(request : Request?, response : Response?) : String {
+fun dealWorkResult(request: Request?) : String {
     println("We received the POST")
     if (request != null) {
         if (request.contentLength() > 0) {

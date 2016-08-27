@@ -5,6 +5,7 @@ import model.worker.ThreadedWorker
 
 import model.worker.Worker
 import java.util.*
+
 /**
  * Generate, build, or otherwise present workers to be interacted with the
  * main master
@@ -12,10 +13,10 @@ import java.util.*
  */
 object WorkerFactory {
 
-    private const val LOCALHOST : String = "192.168.0.1"
+    private const val LOCALHOST: String = "192.168.0.1"
 
     // scratch: the ThreadFactory integration into an ExecutorService might be a better idea
-    fun findWorkers(type : String = "all") : List<Worker> {
+    fun findWorkers(type: String = "all"): List<Worker> {
         val list = ArrayList<Worker>()
 
         when (type) {
@@ -34,11 +35,11 @@ object WorkerFactory {
         return list
     }
 
-    private fun buildLocalHttpWorks(vararg ports : Int) : Array<Worker> {
-        return Array(ports.size, {int -> HttpWorker(ports[int], LOCALHOST) })
+    private fun buildLocalHttpWorks(vararg ports: Int): Array<Worker> {
+        return Array(ports.size, { int -> HttpWorker(ports[int], LOCALHOST) })
     }
 
-    private fun buildBaseThreadWorkers(count : Int) : Array<Worker> {
+    private fun buildBaseThreadWorkers(count: Int): Array<Worker> {
         return Array(count, { i -> ThreadedWorker(Thread.currentThread(), i) })
     }
 }

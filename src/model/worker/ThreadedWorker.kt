@@ -9,29 +9,28 @@ import model.WordGenerator
  * Worker that spawns a thread to accomplish the task
  * Created by stephen on 11/12/15.
  */
-class ThreadedWorker(val toSignal : Thread, val assignedID: Int) : Worker {
+class ThreadedWorker(private val toSignal: Thread, private val assignedID: Int) : Worker {
 
-    // scratch: I think this could be a ThreadLocal, or something. Doesn't feel write
-    var fourLetterWords : Array<String> = emptyArray()
-    var fiveLetterWords : Array<String> = emptyArray()
+    var fiveLetterWords: Array<String> = emptyArray()
 
-    private var testingPredicate : (String) -> Boolean = { true }
+    private var testingPredicate: (String) -> Boolean = { false }
 
     private var innerThread = lazy {
         getWorkingThread()
     }
 
     // From Worker
-    override fun hasCompleted() : Boolean =
-            innerThread.value.state == Thread.State.NEW ||
-            innerThread.value.state == Thread.State.TERMINATED
+    override fun hasCompleted(): Boolean = innerThread.value.state.let {
+        it == Thread.State.NEW || it == Thread.State.TERMINATED
+    }
 
     /**
-     * To be called only after checking ThreadedWorker::hasCompleted
+     * To be called only after checking [hasCompleted]
      */
-    override fun receiveBatch(wordTest : (String) -> Boolean, batchAssignment : Int, fiveLetterWordBank : List<String>) {
+    override fun receiveBatch(wordTest: (String) -> Boolean,
+                              batchAssignment: Int,
+                              fiveLetterWordBank: List<String>) {
         this.testingPredicate = wordTest
-//        this.fourLetterWords = fourLetterWordBank.toTypedArray()
         this.fiveLetterWords = fiveLetterWordBank.toTypedArray()
 
         if (innerThread.value.state == Thread.State.TERMINATED) {
@@ -42,39 +41,20 @@ class ThreadedWorker(val toSignal : Thread, val assignedID: Int) : Worker {
         println("${this.toString()} here. I've started my worker")
     }
 
-    override fun toString() : String {
+    override fun toString(): String {
         return "ThreadedWorker #$assignedID"
     }
 
     /**
      * Gets a thread (that will be lazily initialized) to check all permutations
-     * of the four and five letter words. Lowers memory usage, by using Int
-     * reference pointers instead of String heap references then index accesses
-     * them to combine them with java.lang.String.format()
+     * of the four and five letter words.
+     * Four letter words are retrieved from the (thread-safe) [WordGenerator]
+     *
+     * Lowers memory usage, by using Int reference pointers instead of String heap references
+     * then index accesses them to combine them with Kotlin String interpolated formatting.
      */
-    private fun getWorkingThread() : Thread {
+    private fun getWorkingThread(): Thread {
         return object : Thread({
-            /*for (first in fourLetterWords.indices) {
-                for (sec in fiveLetterWords.indices) {
-                    for (third in fourLetterWords.indices) {
-                        for (fourth in fiveLetterWords.indices) {
-                            for (fifth in fourLetterWords.indices) {
-
-                                val testVal = String.format("%s %s %s %s %s",
-                                        fourLetterWords[first],
-                                        fiveLetterWords[sec],
-                                        fourLetterWords[third],
-                                        fiveLetterWords[fourth],
-                                        fourLetterWords[fifth])
-
-                                if (testingPredicate(testVal)) {
-                                    notifyAndRecord(testVal)
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
 
             while (WordGenerator.hasMore) {
                 val triple = WordGenerator.getNextPermutation()
@@ -100,10 +80,10 @@ class ThreadedWorker(val toSignal : Thread, val assignedID: Int) : Worker {
         }
     }
 
-    private fun notifyAndRecord(successfulFind : String) {
+    private fun notifyAndRecord(successfulFind: String) {
         ConsoleLogger.writeLine("The matching phrase is: $successfulFind", ConsoleColor.BLUE)
         MessageHub.getLocalMessageHub().writeMessage(this, successfulFind)
-        MessageHub.getFileBasedMessageHub().writeMessage(this, successfulFind)
+        MessageHub.getFileMessageHub().writeMessage(this, successfulFind)
         toSignal.interrupt()
     }
 }
